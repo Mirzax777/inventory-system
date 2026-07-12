@@ -1,0 +1,95 @@
+CATEGORY
+- attributes: id, name
+- behaviors:
+  - rename(new_name)              -> validates non-empty string, strips whitespace
+
+
+
+ITEM  
+- attributes: id, name, quantity, price, category
+- behaviors:
+  - rename(new_name)
+  - change_price(new_price)
+  - change_category(new_category)
+  - increase_stock(amount)
+  - decrease_stock(amount)
+
+
+
+CUSTOMER
+- attributes: id, name, phone, address
+- behaviors:
+  - rename(new_name)              -> non-empty string
+  - change_phone(new_phone)       -> non-empty string, or None allowed
+  - change_address(new_address)   -> non-empty string, or None allowed
+
+
+
+SUPPLIER
+- attributes: id, name, company_name, phone, address
+- behaviors:
+  - rename(new_name)
+  - change_company_name(new_company_name)
+  - change_phone(new_phone)
+  - change_address(new_address)
+
+
+
+APP_USER
+- attributes: id, username, password_hash, role
+- behaviors:
+  - change_username(new_username)     -> non-empty string
+  - set_password(raw_password)        -> hashes raw_password before storing, never stores plaintext
+  - verify_password(raw_password)     -> returns bool, compares hash
+  - change_role(new_role)             -> must be one of ("admin", "staff")
+
+
+
+ORDER
+- attributes: id, customer, user, order_date, status, items (list of OrderItem)
+- behaviors:
+  - add_item(item, quantity, unit_price)  -> quantity > 0; only allowed while status == "pending"
+  - remove_item(order_item_id)            -> only allowed while status == "pending"
+  - mark_paid()                           -> only valid from "pending"; else raise
+  - mark_shipped()                        -> only valid from "paid"; else raise
+  - cancel()                              -> only valid from "pending" or "paid"; not from "shipped"
+  - calculate_total()                     -> sum(item.subtotal() for item in items)
+
+
+
+ORDER_ITEM
+- attributes: id, item, quantity, unit_price
+- behaviors:
+  - change_quantity(new_quantity)   -> new_quantity > 0
+  - subtotal()                      -> quantity * unit_price
+
+
+
+PROCUREMENT
+- attributes: id, supplier, user, procurement_date, status, items (list of ProcurementItem)
+- behaviors:
+  - add_item(item, quantity, unit_cost)   -> quantity > 0; only while status == "pending"
+  - remove_item(procurement_item_id)      -> only while status == "pending"
+  - mark_received()                       -> only valid from "pending"; triggers stock increase (in service layer, not here)
+  - cancel()                              -> only valid from "pending"; not from "received"
+  - calculate_total()                     -> sum(item.subtotal() for item in items)
+
+
+
+PROCUREMENT_ITEM
+- attributes: id, item, quantity, unit_cost
+- behaviors:
+  - change_quantity(new_quantity)   -> new_quantity > 0
+  - subtotal()                      -> quantity * unit_cost
+
+
+
+STOCK_TRANSACTION
+- attributes: id, item, transaction_type, quantity, reference_type, reference_id, transaction_date
+- behaviors:
+  - (no mutators — a transaction is a fact once created, so it has no rename/change_* methods)
+  - validated entirely in __init__: transaction_type in ("IN","OUT","ADJUST"), quantity > 0,
+    reference_type in ("ORDER","PROCUREMENT","MANUAL") or None
+  - optionally: classmethods as convenience constructors —
+    from_order(item, quantity, order_id), from_procurement(item, quantity, procurement_id),
+    from_manual_adjustment(item, quantity)
