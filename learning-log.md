@@ -23,3 +23,25 @@ Domain Model - Item, category, customer
 - customer entity
 
 - category entity
+
+Session Summary
+
+Completed Models:
+
+- Item
+- Category
+- Customer
+- Supplier
+- Order
+- OrderItem
+- StockTransaction
+
+Concepts Learned:
+
+- Entity responsibilities
+- Validation inside models
+- Order ↔ OrderItem relationship
+- Item references inside OrderItem
+- Business workflow modeling
+- Immutable transaction records
+- Git basic workflow

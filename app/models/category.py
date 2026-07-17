@@ -5,6 +5,11 @@ class Category:
         self.rename(name)
     
     def rename(self, new_name):
+
+        if not isinstance(new_name, str):
+            raise ValueError("name must be a string")
+
+
         name = new_name.strip()
 
         if not name:

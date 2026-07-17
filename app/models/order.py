@@ -40,9 +40,25 @@ class Order:
             )
 
         self.status = "Shipped"
+
     
+    def mark_complete(self):
+        if self.status == "Cancelled":
+            raise ValueError(
+                "cancelled order cannot be mark complete"
+            )
+        
+        if self.status != "Shipped":
+            raise ValueError("only shipped order can be mark complete")
+
+        self.status = "Complete"
     
     def cancel(self):
+        if self.status == "Complete":
+            raise ValueError(
+                "Completed order cannot be cancelled"
+            )
+        
         self.status = "Cancelled"
     
     
