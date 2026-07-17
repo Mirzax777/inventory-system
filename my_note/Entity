@@ -38,31 +38,31 @@ SUPPLIER
 APP_USER
 - attributes: id, username, password_hash, role
 - behaviors:
-  - change_username(new_username)     -> non-empty string
-  - set_password(raw_password)        -> hashes raw_password before storing, never stores plaintext
-  - verify_password(raw_password)     -> returns bool, compares hash
-  - change_role(new_role)             -> must be one of ("admin", "staff")
+  - change_username(new_username)    
+  - set_password(raw_password)        
+  - verify_password(raw_password)     
+  - change_role(new_role)             
 
 
 
 ORDER
 - attributes: id, customer, user, order_date, status, items (list of OrderItem)
 - behaviors:
-  - add_item(item, quantity, unit_price)  -> quantity > 0; only allowed while status == "pending"
-  - remove_item(order_item_id)            -> only allowed while status == "pending"
-  - mark_paid()                           -> only valid from "pending"; else raise
-  - mark_shipped()                        -> only valid from "paid"; else raise
-  - cancel()                              -> only valid from "pending" or "paid"; not from "shipped"
-  - calculate_total()                     -> sum(item.subtotal() for item in items)
+  - add_item(item, quantity, unit_price)  
+  - remove_item(order_item_id)           
+  - mark_paid()                           
+  - mark_shipped()                        
+  - cancel()                            
+  - calculate_total()                     
 
 
 
 ORDER_ITEM
 - attributes: id, item, quantity, unit_price
 - behaviors:
-  - change_quantity(new_quantity)   -> new_quantity > 0
-  - subtotal()                      -> quantity * unit_price
-
+  - change_quantity(new_quantity)   
+  - subtotal()                      
+  
 
 
 PROCUREMENT
